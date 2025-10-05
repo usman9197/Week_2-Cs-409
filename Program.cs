@@ -4,63 +4,46 @@ class Program
 {
     static void Main()
     {
-        int n;
+        Console.Write("Full name: ");
+        string? fullNameIn = Console.ReadLine();
 
-        // Ask user how many marks they will enter
-        while (true)
+        Console.Write("City: ");
+        string? cityIn = Console.ReadLine();
+
+        // Check if both fields were filled
+        if (string.IsNullOrWhiteSpace(fullNameIn) || string.IsNullOrWhiteSpace(cityIn))
         {
-            Console.Write("How many marks (N): ");
-            string? s = Console.ReadLine();
-            if (int.TryParse(s, out n) && n > 0)
-                break;
-
-            Console.WriteLine("Enter a positive whole number.");
+            Console.WriteLine("Both name and city are required.");
+            return;
         }
 
-        int[] marks = new int[n];
-        long sum = 0;
-        int min = int.MaxValue, max = int.MinValue;
+        string fullName = fullNameIn.Trim();
+        string city = cityIn.Trim();
 
-        // Read marks safely with validation
-        for (int i = 0; i < n; i++)
-        {
-            while (true)
-            {
-                Console.Write($"Mark #{i + 1} (0..100): ");
-                string? s = Console.ReadLine();
+        // Split full name into words (remove extra spaces)
+        string[] parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                if (int.TryParse(s, out int m) && m >= 0 && m <= 100)
-                {
-                    marks[i] = m;
-                    sum += m;
+        // Get initials: first letter of first and last word (if present)
+        char firstInitial = char.ToUpperInvariant(parts[0][0]);
+        char lastInitial = (parts.Length > 1)
+            ? char.ToUpperInvariant(parts[^1][0]) // ^1 = last element
+            : '_'; // use underscore if only one name given
 
-                    if (m < min) min = m;
-                    if (m > max) max = m;
-                    break;
-                }
+        // Create initials string
+        string initials = (lastInitial == '_')
+            ? $"{firstInitial}."
+            : $"{firstInitial}.{lastInitial}.";
 
-                Console.WriteLine("Invalid mark. Enter 0..100.");
-            }
-        }
+        // Count total characters in full name (including spaces)
+        int nameLength = fullName.Length;
 
-        // Calculate average
-        double avg = sum / (double)n;
+        // Create an ID using city, initials, and name length
+        string id = $"{city.ToUpperInvariant()}_{firstInitial}{(lastInitial == '_' ? "" : lastInitial.ToString())}_{nameLength}";
 
-        // Show summary
+        // Output the formatted report
         Console.WriteLine();
-        Console.WriteLine($"Min: {min}, Max: {max}, Avg: {avg:F2}");
-        Console.WriteLine("Chart (each * = 1 point above Min):");
-
-        // Draw chart
-        for (int i = 0; i < n; i++)
-        {
-            int stars = marks[i] - min; // normalized relative to lowest mark
-            if (stars < 0) stars = 0;
-
-            Console.Write($"M{i + 1} ({marks[i]}): ");
-            for (int k = 0; k < stars; k++)
-                Console.Write('*');
-            Console.WriteLine();
-        }
+        Console.WriteLine($"Hello, {fullName} ({initials}) from {city}");
+        Console.WriteLine($"Name length: {nameLength}");
+        Console.WriteLine($"ID: {id}");
     }
 }
