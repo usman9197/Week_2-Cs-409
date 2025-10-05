@@ -4,41 +4,59 @@ class Program
 {
     static void Main()
     {
-        // Create an array to store 3 numbers
-        double[] values = new double[3];
+        Console.WriteLine("1) Add  2) Sub  3) Mul  4) Div  Q) Quit");
+        Console.Write("Choose: ");
+        string? choice = Console.ReadLine();
 
-        // Loop to get 3 valid numbers from the user
-        for (int i = 0; i < values.Length; i++)
+        if (string.IsNullOrWhiteSpace(choice) ||
+            choice.Equals("Q", StringComparison.OrdinalIgnoreCase))
         {
-            while (true)
-            {
-                Console.Write($"Enter number #{i + 1}: ");
-                string? input = Console.ReadLine();
-
-                // Try to convert text into a number safely
-                if (double.TryParse(input, out double number))
-                {
-                    values[i] = number; // store the valid number
-                    break;              // exit while loop
-                }
-                else
-                {
-                    Console.WriteLine("Invalid number. Try again.");
-                }
-            }
+            Console.WriteLine("Goodbye.");
+            return;
         }
 
-        // Calculate the sum of the numbers
-        double sum = 0;
-        for (int i = 0; i < values.Length; i++)
+        // Read operand A safely
+        Console.Write("A: ");
+        if (!double.TryParse(Console.ReadLine(), out double a))
         {
-            sum += values[i];
+            Console.WriteLine("Bad A (not a number).");
+            return;
         }
 
-        // Calculate the average
-        double average = sum / values.Length;
+        // Read operand B safely
+        Console.Write("B: ");
+        if (!double.TryParse(Console.ReadLine(), out double b))
+        {
+            Console.WriteLine("Bad B (not a number).");
+            return;
+        }
 
-        // Display the result with 2 decimal places
-        Console.WriteLine($"Average = {average:F2}");
+        double result;
+
+        switch (choice.Trim())
+        {
+            case "1":
+                result = a + b;
+                break;
+            case "2":
+                result = a - b;
+                break;
+            case "3":
+                result = a * b;
+                break;
+            case "4":
+                if (b == 0)
+                {
+                    Console.WriteLine("Cannot divide by zero.");
+                    return;
+                }
+                result = a / b;
+                break;
+            default:
+                Console.WriteLine("Invalid choice.");
+                return;
+        }
+
+        Console.WriteLine($"Result = {result:F2}");
     }
 }
