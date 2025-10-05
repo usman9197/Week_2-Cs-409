@@ -4,67 +4,63 @@ class Program
 {
     static void Main()
     {
+        int n;
+
+        // Ask user how many marks they will enter
         while (true)
         {
-            Console.WriteLine();
-            Console.WriteLine("=== Calculator+ ===");
-            Console.WriteLine("1) Add  2) Sub  3) Mul  4) Div  Q) Quit");
-            Console.Write("Choose: ");
-            string? pick = Console.ReadLine();
-
-            // Exit the loop if user types Q or leaves it blank
-            if (string.IsNullOrWhiteSpace(pick) ||
-                pick.Equals("Q", StringComparison.OrdinalIgnoreCase))
-            {
-                Console.WriteLine("Goodbye.");
+            Console.Write("How many marks (N): ");
+            string? s = Console.ReadLine();
+            if (int.TryParse(s, out n) && n > 0)
                 break;
-            }
 
-            // Get first number safely
-            Console.Write("A: ");
-            if (!double.TryParse(Console.ReadLine(), out double a))
+            Console.WriteLine("Enter a positive whole number.");
+        }
+
+        int[] marks = new int[n];
+        long sum = 0;
+        int min = int.MaxValue, max = int.MinValue;
+
+        // Read marks safely with validation
+        for (int i = 0; i < n; i++)
+        {
+            while (true)
             {
-                Console.WriteLine("Bad A (not a number).");
-                continue; // go back to menu
+                Console.Write($"Mark #{i + 1} (0..100): ");
+                string? s = Console.ReadLine();
+
+                if (int.TryParse(s, out int m) && m >= 0 && m <= 100)
+                {
+                    marks[i] = m;
+                    sum += m;
+
+                    if (m < min) min = m;
+                    if (m > max) max = m;
+                    break;
+                }
+
+                Console.WriteLine("Invalid mark. Enter 0..100.");
             }
+        }
 
-            // Get second number safely
-            Console.Write("B: ");
-            if (!double.TryParse(Console.ReadLine(), out double b))
-            {
-                Console.WriteLine("Bad B (not a number).");
-                continue; // go back to menu
-            }
+        // Calculate average
+        double avg = sum / (double)n;
 
-            double result;
+        // Show summary
+        Console.WriteLine();
+        Console.WriteLine($"Min: {min}, Max: {max}, Avg: {avg:F2}");
+        Console.WriteLine("Chart (each * = 1 point above Min):");
 
-            // Perform the selected operation
-            switch (pick.Trim())
-            {
-                case "1":
-                    result = a + b;
-                    break;
-                case "2":
-                    result = a - b;
-                    break;
-                case "3":
-                    result = a * b;
-                    break;
-                case "4":
-                    if (b == 0)
-                    {
-                        Console.WriteLine("Cannot divide by zero.");
-                        continue; // go back to menu
-                    }
-                    result = a / b;
-                    break;
-                default:
-                    Console.WriteLine("Invalid choice.");
-                    continue;
-            }
+        // Draw chart
+        for (int i = 0; i < n; i++)
+        {
+            int stars = marks[i] - min; // normalized relative to lowest mark
+            if (stars < 0) stars = 0;
 
-            // Display result formatted to 2 decimal places
-            Console.WriteLine($"Result = {result:F2}");
+            Console.Write($"M{i + 1} ({marks[i]}): ");
+            for (int k = 0; k < stars; k++)
+                Console.Write('*');
+            Console.WriteLine();
         }
     }
 }
